@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		
+		
+		<!-- FontsAwesome -->
+		<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+		
+		<!-- LocalCss -->
+		<link rel="stylesheet" href="css/style.css">
+		
+	</head>
+
+	<body>
+		<div class="col-md-4 col-0"></div>
+		
+		<div style="margin-top:10%;border-radius:25px;background-color: #009edf;" class ="col-md-4 col-12">
+			<div id="login_form">
+				<form style="padding: 10px 10px;" id="frmLogin" class="" name="frmLogin" action="" method="POST">
+					
+						<h4>Sistema de Gerenciamento de Hosts</h4>
+						<div class="form-group">
+							<label class="control-label" for="nome">Usuario</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="fas fa-user" aria-hidden="true"></i></span>
+								<input type="text" class="form-control" name="member_name" id="member_name"  placeholder="Usuario" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label" for="nome">Senha</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="fas fa-key" aria-hidden="true"></i></span>
+								<input type="password" class="form-control" name="password_name" id="password_name"  placeholder="Senha" required>
+							</div>
+						</div>
+						
+						<div class="form-group">
+						<label for="remember" class="btn btn-primary"> Remember Me
+								<input type="checkbox" id="remember" class="badgebox">
+								<span class="badge">&check;</span>
+							</label>
+						</div>
+							
+						<div class="row">
+							<div class="col-md-4"></div>
+							
+							<div class="form-group">
+								<div class="col-md-4">
+								  <button id="signin" type="submit" name="login" value="Login" class="btn btn-info ">Entrar</button>
+								</div>
+							</div>
+						</div>
+						<h3>Não possui um registro? <a class="signup_button" href="#" id="signup_button">Registre-se</a></h3>
+						<div id ="error_signin" ><h4 class="text-danger"></h4></div>
+						<div id ="success_signin" ><h4 class="text-success"></h4></div>								
+														
+					 
+				</form>
+			</div>
+			
+			<!--SignUp Form -->
+			<div id="signup_form">
+				<form style="padding: 10px 10px;" id="signup" action="#" >
+					
+						<h4>Escreva o nome de usuario e senha que deseja utilizar</h4>
+						<div class="form-group">
+							<label class="control-label" for="nome">Usuario</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="fas fa-user" aria-hidden="true"></i></span>
+								<input type="text" class="form-control" name="signup_name" id="signup_name"    required>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="control-label" for="email">Email</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="fas fa-envelope" aria-hidden="true"></i></span>
+								<input type="text" class="form-control" name="signup_email" id="signup_email"    required>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="control-label" for="password">Senha</label>
+							<div class="input-group">
+								<span class="input-group-addon"><i class="fas fa-key" aria-hidden="true"></i></span>
+								<input type="password" class="form-control" name="signup_password" id="signup_password"    required>
+							</div>
+						</div>
+							
+						<div class="row">
+							<div class="col-md-4"></div>		
+							<div class="form-group">
+								<div class="col-md-4">
+								  <button id="register" type="submit"   class="btn btn-info ">Registrar</button>
+								</div>
+							</div>
+						</div> 
+						<h3>Já possui uma conta? <a class="signin_button" href="#" id="signin_button">Entrar</a></h3>
+						<div id ="error_signup" ><h4 class="text-danger"></h4></div>
+					 
+				</form>
+			</div>
+		</div>
+		
+		
+	</body>
+	
+	<script>
+	function createCookie(name, value, expires, path, domain) {
+	  var cookie = name + "=" + escape(value) + ";";
+
+	  if (expires) {
+		// If it's a date
+		if(expires instanceof Date) {
+		  // If it isn't a valid date
+		  if (isNaN(expires.getTime()))
+		   expires = new Date();
+		}
+		else
+		  expires = new Date(new Date().getTime() + parseInt(expires) * 1000 * 60 * 60 * 24);
+
+		cookie += "expires=" + expires.toGMTString() + ";";
+	  }
+
+	  if (path)
+		cookie += "path=" + path + ";";
+	  if (domain)
+		cookie += "domain=" + domain + ";";
+
+	  document.cookie = cookie;
+	}
+	
+	function getCookie(name) {
+       var dc = document.cookie;
+       var prefix = name + "=";
+       var begin = dc.indexOf("; " + prefix);
+       if (begin == -1) {
+              begin = dc.indexOf(prefix);
+              if (begin != 0) return null;
+       } else
+       begin += 2;
+       var end = document.cookie.indexOf(";", begin);
+       if (end == -1)
+       end = dc.length;
+       return unescape(dc.substring(begin + prefix.length, end));
+	}
+	
+	//Check if user has a cookie already
+	
+	$( window ).on( "load", function() {
+	
+		if(getCookie("username") || getCookie("password")){
+			var cookie_username =getCookie("username");
+			var cookie_password =getCookie("password");
+			
+			$.ajax({
+				type: "POST",
+				url: "PHP/api/sistemaLogin.php",
+				data: JSON.stringify({username:cookie_username,password:cookie_password}),
+				contentType: "application/json",
+				dataType: "json",
+				complete: function(xhr) {
+					if(xhr.status =="403"){				
+						$( "#error_signin h4").empty();
+						$( "#success_signin h4").empty();
+						$( "#error_signin h4").hide().text(xhr.responseText).fadeIn();
+					}
+					if(xhr.status =="202"){
+						window.location.href = "main.html";
+					}
+				}
+				
+			});
+		}
+	
+	});
+	
+	$( "#signin" ).click(function(event) {
+		var username=$( "#member_name").val();
+		var password =$( "#password_name").val();
+		$.ajax({
+				type: "POST",
+				url: "PHP/api/sistemaLogin.php",
+				data: JSON.stringify({username:username,password:password}),
+				contentType: "application/json",
+				dataType: "json",
+				complete: function(xhr) {
+					if(xhr.status =="403"){				
+						$( "#error_signin h4").empty();
+						$( "#success_signin h4").empty();
+						$( "#error_signin h4").hide().text(xhr.responseText).fadeIn();
+							
+					}
+					if(xhr.status =="202"){
+						if($("#remember").is(':checked')){
+						createCookie("username", username,30,"/");
+						createCookie("password", password,30,"/");
+						//window.location.href = "main.html";
+						}
+						window.location.href = "main.html";
+					}
+				}
+				
+			});
+		
+
+	return false;	
+	});
+	
+	//Function to add and remove classes for mobile users//
+	function mobileViewUpdate() {
+		var viewportWidth = $(window).width();
+		if (viewportWidth < 1024) {
+			//All the css classe must be added to the respectives elements
+			
+			$(".form-group").addClass("form-group-lg");
+			$("#register,#signin").addClass("btn-add");
+		
+		}
+		else{
+			
+			$(".form-group").removeClass("form-group-lg");
+			$("#register,#signin").removeClass("btn-add");
+			
+		}
+	}
+	
+	$("#signup_form").hide();
+	
+	//Register logic//
+	$("#register").click(function() {
+		
+		//if($("#signup")[0].checkValidity() || $("#signup")[1].checkValidity() || $("#signup")[1].checkValidity()  ){
+			var new_username =$("#signup_name").val();
+			var new_email =$("#signup_email").val();
+			var new_password =$("#signup_password").val();
+			
+			$.ajax({
+				type: "POST",
+				url: "PHP/api/cadastraUsuario.php",
+				data: JSON.stringify({username:new_username,email:new_email,password:new_password}),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				
+				complete: function(xhr) {
+					
+					if(xhr.status == "200")
+					{
+						console.log(xhr.status);	
+						$( "#error_signin h4").empty();
+						$( "#success_signin h4").empty();
+						$( "#success_signin h4").hide().append(xhr.responseText).fadeIn();
+						$("#signup")[0].reset();
+						$("#signup_form").fadeToggle("slow", function() {
+							$("#login_form").fadeToggle("slow");
+						});
+					}
+					if(xhr.status == "403"){
+					console.log(xhr.status);	
+					$( "#error_signup h4").empty();
+					$( "#success_signup h4").empty();
+					$( "#error_signup h4").hide().text(xhr.responseText).fadeIn();
+					
+					}
+				}
+			});
+		return false;
+	});
+
+	// On Click SignUp It Will Hide Login Form and Display Registration Form
+	$("#signup_button").click(function() {
+		$( "#error_signup h4").empty();
+					
+		$("#login_form").fadeToggle("slow", function() {
+			$("#signup_form").fadeToggle("slow");
+		});
+	});
+	// On Click SignIn It Will Hide Registration Form and Display Login Form
+	$("#signin_button").click(function() {
+		$( "#error_signin h4").empty();
+		$( "#success_signin h4").empty();
+		$("#signup_form").fadeToggle("slow", function() {
+			$("#login_form").fadeToggle("slow");
+		});
+	});
+	$(window).on('load resize', mobileViewUpdate)
+	
+	
+	</script>

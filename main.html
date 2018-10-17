@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		
+		<!-- FontsAwesome -->
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+		
+		
+		<!-- LocalCss -->
+		<link rel="stylesheet" href="css/style2.css">
+
+	</head>
+
+	<body>
+		
+		
+		
+		<h4 id="login_message" style="float: right;"><a href="#" onclick="logOut()">  Logout</a></p></h4>
+		<!-- Definition of the main tabs -->
+		<ul class="nav nav-tabs left-navtab ">
+			<li class="active"><a class="hosts-tab"  data-toggle="tab" href="#hosts">Lista de Hosts</a></li>
+			<li id="user-tab"><a class="user-tab"  data-toggle="tab" href="#user">Gerenciar Conta</a></li>
+		</ul>
+
+		<div class="tab-content right-tabcontent">
+
+			<div id="hosts" class="tab-pane active hosts-tab" >
+				<div class= "table-css">	
+					<img src="img/logo.png" alt="Logo" class="center-image"> 
+					<div class="row" style="margin-left:20px;margin-right:20px;">
+						<div class="col-xs-12  col-sm-12 col-md-12 col-lg-12">
+							<h3>Lista de Hosts:<span id="total"></span><button id="register" type="button" class="btn btn-warning" style="float: right;">Add</button></h3>
+							
+						</div>
+					</div>
+					
+					<table id="tablehosts" class="table ">
+						<thead>
+							<tr>
+								<th class="col-2 text-center">Host</th>
+								<th class="col-3 text-center">Porta SSH</th>
+								<th class="col-3 text-center">Porta WEB</th>
+								<th class="col-3 text-center">Status</th>
+								<th class="col-1 text-center">Opções</th>
+							</tr>
+						</thead>
+						<tbody>																				
+						</tbody>
+					</table>
+					<div id="popup"></div>
+				</div>	
+			</div>
+			
+			<div id="user" class="tab-pane user-tab" >
+				<div style="margin-left:20px;margin-right:20px;">
+						<h3>Selecione o funcionario que você deseja visualizar</h3>
+						<form id="formadmin"  action="#" autocomplete="off">
+							<div class ="row">
+								<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+									<div class="form-group">
+										<label class="control-label" for="nome">Funcionario</label>
+											<select class="form-control" id="dropdown">
+												<option></option>
+											</select>
+									</div>
+								</div>
+								
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									<div id="export_div"  class="form-group">
+										<label class="control-label" for="add"></label>
+										
+									</div>
+								</div>
+							</div>
+						</form>
+						
+						<div class= "table-css">
+							
+								<table id="tableuser" class="table ">
+									<thead>									
+									</thead>
+									<tbody>
+									
+									</tbody>
+								</table>
+						</div>
+				</div>
+			</div>
+	</body>
+	
+	<script>
+	
+	var cancelName;
+	var cancelSsh;
+	var cancelWeb;
+	
+	//Checa a sessão do usuario e busca seus hosts//
+	$( window ).on( "load", function() {
+		
+		//Checa se um usuario possue uma sessão//
+		$.ajax({
+				type: "POST",
+				url: "PHP/api/checaUsuario.php",
+				//data: JSON.stringify({username:username,password:password}),
+				//contentType: "application/json",
+				//dataType: "json",
+				complete: function(xhr) {
+					
+					if(xhr.status =="403"){				
+						window.location.href = "login.html";
+						deleteCookie("username");
+						deleteCookie("password");
+					}
+					if(xhr.status =="200"){
+						var welcome_name =jQuery.parseJSON(xhr.responseText);
+						$( "#login_message").prepend("Bem vindo,"+ welcome_name.nome);
+					}
+				}
+		});
+		
+		//Pega todos os hosts do usuario//
+		$.ajax({
+				type: "POST",
+				url: "PHP/api/checaHosts.php",
+				complete: function(xhr) {
+					
+					if(xhr.status =="403"){					
+					}
+					if(xhr.status =="200"){
+						var information =jQuery.parseJSON(xhr.responseText);
+						$( "#tablehosts tbody").hide().append(information[0].table).fadeIn("fast");
+						$( "#total").hide().text(information[0].total).fadeIn("fast");
+					}
+					
+					if(xhr.status =="204"){
+						$( "#total").hide().text("0").fadeIn("fast");
+					}
+				}				
+		});		
+	});
+	
+	//Botão que muda status do Host//
+	$(document).on('click', "#powerOn", function() {
+		var thisName = $(this).closest('tr').find('#name').text();
+		var thisStatus=$(this).closest('tr').find('#status');
+		var thisButton=$(this);
+		$.ajax({
+			type: "POST",
+			url: "PHP/api/mudaStatusHost.php",
+			data: JSON.stringify({name:thisName}),
+			contentType: "application/json",
+			dataType: "json",
+			complete: function(xhr) {
+				
+				if(xhr.status =="403"){				
+					console.log(xhr.responseText);
+				}
+				if(xhr.status =="200"){
+					if(xhr.responseText == 1 ){
+						thisButton.removeClass('btn-success');
+						thisStatus.removeClass('powerOn');
+						thisButton.addClass('btn-danger');
+						thisStatus.addClass('powerOff');
+						thisStatus.text("Ativado");
+					}
+					else{							
+						thisButton.removeClass('btn-danger');
+						thisStatus.removeClass('powerOff');
+						thisButton.addClass('btn-success');
+						thisStatus.addClass('powerOn');
+						thisStatus.text("Desativado");
+					}
+				}
+			}
+		});		
+	});
+	
+	//Botão que deleta Host//
+	$(document).on('click', "#delete", function() {
+		cancelName = $(this).closest('tr').find('#name').text();
+		cancelSsh=$(this).closest('tr').find('#ssh_port').text();
+		cancelWeb=$(this).closest('tr').find('#web_port').text();
+		
+		if($("#cancel_host").length === 0)
+		{
+			$("#popup").hide().append("<div class='popup' id='cancel_host'><h3><center>Você tem certeza disso?</center></h3><div class ='row'><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='delete_host' type='button' class='btn btn-success'>Sim</button></div><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_delete_host' type='button' class='btn btn-danger'>Não</button></div></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//Deleta o host desejado e recarrega tabela//
+	$(document).on('click', "#delete_host", function() {
+		
+		$.ajax({
+			type: "POST",
+			url: "PHP/api/deletaHost.php",
+			data: JSON.stringify({name:cancelName,ssh:cancelSsh,web:cancelWeb}),
+			contentType: "application/json",
+			dataType: "json",
+			complete: function(xhr) {
+				
+				if(xhr.status =="403"){				
+					console.log(xhr.responseText);
+				}
+				if(xhr.status =="202"){
+					$("#cancel_host").fadeOut("fast", function() {
+					$(this).remove();
+					});
+					
+					//Pega todos os hosts do usuario//
+					$.ajax({
+						type: "POST",
+						url: "PHP/api/checaHosts.php",
+						complete: function(xhr) {
+							
+							if(xhr.status =="403"){					
+							}
+							if(xhr.status =="200"){
+								var information =jQuery.parseJSON(xhr.responseText);
+								$( "#tablehosts tbody").empty("fast").hide().append(information[0].table).fadeIn("fast");
+								$( "#total").hide().text(information[0].total).fadeIn("fast");
+							}
+							if(xhr.status =="204"){
+								$( "#total").hide().text("0").fadeIn("fast");
+							}
+						}				
+					});
+				}
+			}
+		});
+	});
+	
+	//Restrição de Input//
+	$(document).on('keypress',"#new_ssh_port,#new_web_port", function (event) {
+    var regex = new RegExp("^[0-9\b]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+    }
+	});
+	
+	//PopUp de Registro de Usuario//
+	$(document).on('click', "#register", function() {
+		if($(".add_user").length === 0)
+		{
+			$("#popup").hide().append("<div class='add_user'><div><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_add_host'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Nome</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-folder-plus'></i></span><input type='text' class='form-control' name='new_name' id='new_name'  placeholder='Nome' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta SSH</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-docker'></i></span><input type='text' class='form-control' name='new_ssh_port' id='new_ssh_port'  placeholder='Porta SSH' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta Web</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-internet-explorer'></i></span><input type='text' class='form-control' name='new_web_port' id='new_web_port'  placeholder='Porta Web' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='add_host' type='submit' name='new_host' value='host' class='btn btn-info'>Adicionar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_new_host' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_new_host'></h3></div></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//Formulario que adiciona um novo Host//
+	$(document).on('submit', "#form_add_host", function() {
+		var add_name=$( "#new_name").val();
+		var add_ssh =$( "#new_ssh_port").val();
+		var add_web	=$( "#new_web_port").val();
+		$( "#error_new_host").empty();
+		$.ajax({
+			type: "POST",
+			url: "PHP/api/cadastraHost.php",
+			data: JSON.stringify({name:add_name,sshPort:add_ssh,webPort:add_web}),
+			contentType: "application/json",
+			dataType: "json",
+			complete: function(xhr) {
+				
+				if(xhr.status =="403"){				
+					$( "#error_new_host").hide().text(xhr.responseText).fadeIn("fast");
+				}
+				if(xhr.status =="201"){
+					$(".add_user").fadeOut("fast", function() {
+					$(this).remove();
+					});
+					
+					//Pega todos os hosts do usuario//
+					$.ajax({
+						type: "POST",
+						url: "PHP/api/checaHosts.php",
+						complete: function(xhr) {
+							
+							if(xhr.status =="200"){
+								var information =jQuery.parseJSON(xhr.responseText);
+								$( "#tablehosts tbody").empty("fast").hide().append(information[0].table).fadeIn("fast");
+								$( "#total").hide().text(information[0].total).fadeIn("fast");
+							}
+							if(xhr.status =="204"){
+								$( "#total").hide().text("0").fadeIn("fast");
+							}
+						}				
+					});					
+				}
+			}
+		});
+		return false;
+	});
+	
+	//Remove PopUp de novo host//
+	$(document).on('click', "#cancel_new_host", function() {
+		$(".add_user").fadeOut("fast", function() {
+			$(this).remove();
+		});
+	});
+	
+	//Remove PopUp de deletar host//
+	$(document).on('click', "#cancel_delete_host", function() {
+	
+		$("#cancel_host").fadeOut("fast", function() {
+			$(this).remove();
+		});
+	});
+	
+	//Funçoes de cookie//
+	function getCookie(name) {
+       var dc = document.cookie;
+       var prefix = name + "=";
+       var begin = dc.indexOf("; " + prefix);
+       if (begin == -1) {
+              begin = dc.indexOf(prefix);
+              if (begin != 0) return null;
+       } else
+       begin += 2;
+       var end = document.cookie.indexOf(";", begin);
+       if (end == -1)
+       end = dc.length;
+       return unescape(dc.substring(begin + prefix.length, end));
+	}
+	
+	function deleteCookie(name) {
+		   if (getCookie(name)) {
+				  document.cookie = name + "=" +
+				  "; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+				  //history.go(0);
+		   }
+	}
+	
+	//Funçao de logOut//
+	function logOut() {
+		deleteCookie("username");
+		deleteCookie("password");
+		
+		$.ajax({
+				type: "POST",
+				url: "PHP/api/deslogaUsuario.php",
+				complete: function(xhr) {
+					if(xhr.status =="202"){
+						window.location.href = "login.html";
+					}
+				}
+				
+		});
+		return false;
+	}
+	
+	
+	//Delete Host//
+	function deleteHost(name,ssh,web)
+	{
+	
+	
+	}
+	
+	</script>
