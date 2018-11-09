@@ -24,9 +24,6 @@
 	</head>
 
 	<body>
-		
-		
-		
 		<h4 id="login_message" style="float: right;"><a href="#" onclick="logOut()">  Logout</a></p></h4>
 		<!-- Definition of the main tabs -->
 		<ul class="nav nav-tabs left-navtab ">
@@ -35,8 +32,8 @@
 		</ul>
 
 		<div class="tab-content right-tabcontent">
-
 			<div id="hosts" class="tab-pane active hosts-tab" >
+				<div id="popup_host"></div>
 				<div class= "table-css">	
 					<img src="img/logo.png" alt="Logo" class="center-image"> 
 					<div class="row" style="margin-left:20px;margin-right:20px;">
@@ -59,11 +56,63 @@
 						<tbody>																				
 						</tbody>
 					</table>
-					<div id="popup"></div>
+					
 				</div>	
 			</div>
 			
-			<div id="user" class="tab-pane user-tab" >	
+			<div id="user" class="tab-pane user-tab">
+				<div id="popup_user"></div>
+				<div>
+					<div>
+						<div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4'>
+							<div class="row">
+							
+								<div class="'col-xs-12  col-sm-12  col-md-10  col-lg-10 ">
+									<div class='form-group'>
+										<label class='control-label' for='nome'>Usuario</label>
+										<div class='input-group'>
+											<span class='input-group-addon'>
+												<i class="fas fa-user"></i>
+											</span>
+											<input type='text' class='form-control' name='manager_name' id='manager_name'  placeholder='Nome' readonly>
+										</div>
+									</div>
+								</div>
+							
+								<div class="'col-xs-12  col-sm-12  col-md-2  col-lg-2 ">
+									<label >&nbsp;</label>
+									<button id='change_username' type='button' class='btn btn-warning'>Alterar Usuario</button>
+								</div>
+							</div>	
+							<div class="row">
+								<div class="'col-xs-12  col-sm-12  col-md-10  col-lg-10 ">
+									<div class='form-group'>
+										<label class='control-label' for='nome'>Email</label>
+										<div class='input-group'>
+											<span class='input-group-addon'>
+												<i class="fas fa-envelope"></i>
+											</span>
+											<input type='text' class='form-control' name='manager_email' id='manager_email' readonly placeholder='Email'>
+										</div>
+									</div>
+								</div>
+								<div class="'col-xs-12  col-sm-12  col-md-2  col-lg-2 ">
+									<label >&nbsp;</label>
+									<button id='change_email' type='button' class='btn btn-warning'>Alterar Email</button>
+								</div>
+							</div>
+							<div class ="row">
+								<div class="'col-xs-12  col-sm-12  col-md-2  col-lg-2 ">
+									<label >&nbsp;</label>
+									<button id='change_password' type='button' class='btn btn-warning'>Alterar Senha</button>
+								</div>
+							</div>
+							<h3 id='change_information'></h3>
+						</div>
+					</div>
+				</div>
+				
+				
 			</div>
 	</body>
 	
@@ -73,10 +122,10 @@
 	var cancelSsh;
 	var cancelWeb;
 	
-	//Checa a sessão do usuario e busca seus hosts//
+	//Checa a sessão do usuario, busca seus hosts e suas informações//
 	$( window ).on( "load", function() {
 		
-		//Checa se um usuario possue uma sessão//
+		//Checa se um usuario possue uma sessão e pega suas informações//
 		$.ajax({
 				type: "POST",
 				url: "PHP/api/checaUsuario.php",
@@ -91,8 +140,10 @@
 						deleteCookie("password");
 					}
 					if(xhr.status =="200"){
-						var welcome_name =jQuery.parseJSON(xhr.responseText);
-						$( "#login_message").prepend("Bem vindo,"+ welcome_name.nome);
+						var welcome =jQuery.parseJSON(xhr.responseText);
+						$( "#login_message").prepend("Bem vindo,"+ welcome.nome);
+						$( "#manager_name" ).val(welcome.nome);
+						$( "#manager_email" ).val(welcome.email);
 					}
 				}
 		});
@@ -115,7 +166,9 @@
 						$( "#total").hide().text("0").fadeIn("fast");
 					}
 				}				
-		});		
+		});
+
+		
 	});
 	
 	//Botão que muda status do Host//
@@ -154,15 +207,54 @@
 		});		
 	});
 	
-	//Botão que deleta Host//
+	//PopUp que deleta Host//
 	$(document).on('click', "#delete", function() {
-		cancelName = $(this).closest('tr').find('#name').text();
-		cancelSsh=$(this).closest('tr').find('#ssh_port').text();
-		cancelWeb=$(this).closest('tr').find('#web_port').text();
 		
-		if($("#cancel_host").length === 0)
+		
+		if($(".cancel_host").length === 0)
 		{
-			$("#popup").hide().append("<div class='popup' id='cancel_host'><h3><center>Você tem certeza disso?</center></h3><div class ='row'><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='delete_host' type='button' class='btn btn-success'>Sim</button></div><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_delete_host' type='button' class='btn btn-danger'>Não</button></div></div></div>").fadeIn("fast");
+			cancelName = $(this).closest('tr').find('#name').text();
+			cancelSsh=$(this).closest('tr').find('#ssh_port').text();
+			cancelWeb=$(this).closest('tr').find('#web_port').text();
+			$("#popup_host").hide().append("<div class='popup cancel_host' ><h3><center>Você tem certeza disso?</center></h3><div class ='row'><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='delete_host' type='button' class='btn btn-success'>Sim</button></div><div class='col-xs-6 col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_delete_host' type='button' class='btn btn-danger'>Não</button></div></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//PopUp que altera Usuario//
+	$(document).on('click', "#change_username", function() {
+		
+		if($(".change_username").length === 0)
+		{
+			
+			$("#popup_user").hide().append("<div class='change_username'><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_change_username'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Novo nome</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-user'></i></span><input type='text' class='form-control' name='new_username' id='new_username'  placeholder='Nome' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='change_user_form' type='submit' value='host' name='change_user'  class='btn btn-info'>Alterar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_change_user' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_change_user'></h3></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//PopUp que altera Email//
+	$(document).on('click', "#change_email", function() {
+		
+		if($(".change_username").length === 0)
+		{
+			
+			$("#popup_user").hide().append("<div class='change_email'><div><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_change_email'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Novo email</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-envelope'></i></span><input type='text' class='form-control' name='new_name' id='new_email'  placeholder='Email' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='change_email_form' type='submit'   class='btn btn-info'>Alterar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_change_user' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_change_email'></h3></div></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//PopUp que altera Senha//
+	$(document).on('click', "#change_password", function() {
+		
+		if($(".change_username").length === 0)
+		{
+			$("#popup_user").hide().append("<div class='change_password'><div><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_change_password'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Senha Antiga</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-key'></i></span><input type='password' class='form-control' id='old_password'  placeholder='Senha Antiga' required></div></div><div class='form-group'><label class='control-label' for='nome'>Nova Senha</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-key'></i></span><input type='password' class='form-control' name='new_name' id='new_password'  placeholder='Nova Senha' required></div></div><div class='form-group'><label class='control-label' for='nome'>Nova Senha novamente</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-key'></i></span><input type='password' class='form-control' id='new_password_2'  placeholder='Nova Senha Novamente' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='change_password_form' type='submit'  class='btn btn-info'>Alterar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_change_password' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_change_password'></h3></div></div></div>").fadeIn("fast");
+		}
+	});
+	
+	//PopUp de Registro de Dominio//
+	$(document).on('click', "#register", function() {
+		if($(".add_host").length === 0)
+		{
+			
+			$("#popup_host").hide().append("<div class='add_host'><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_add_host'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Nome</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-folder-plus'></i></span><input type='text' class='form-control' name='new_name' id='new_name'  placeholder='Nome' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta SSH</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-docker'></i></span><input type='text' class='form-control' name='new_ssh_port' id='new_ssh_port'  placeholder='Porta SSH' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta Web</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-internet-explorer'></i></span><input type='text' class='form-control' name='new_web_port' id='new_web_port'  placeholder='Porta Web' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='add_host' type='submit' name='new_host' value='host' class='btn btn-info'>Adicionar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_new_host' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_new_host'></h3></div></div>").fadeIn("fast");
 		}
 	});
 	
@@ -181,8 +273,8 @@
 					console.log(xhr.responseText);
 				}
 				if(xhr.status =="202"){
-					$("#cancel_host").fadeOut("fast", function() {
-					$(this).remove();
+					$("#popup_host").fadeOut("fast", function() {
+						$(this).empty();
 					});
 					
 					//Pega todos os hosts do usuario//
@@ -208,25 +300,112 @@
 		});
 	});
 	
-	//Restrição de Input//
-	$(document).on('keypress',"#new_ssh_port,#new_web_port", function (event) {
-    var regex = new RegExp("^[0-9\b]+$");
-    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
-    if (!regex.test(key)) {
-       event.preventDefault();
-       return false;
-    }
+	//Altera Nome do Usuario//
+	$(document).on('submit', "#form_change_username", function() {
+	
+		$("#error_change_user").empty();
+		$("#change_information").empty();
+		var old_name = $("#manager_name").val();
+		var new_name = $("#new_username").val();	
+		$.ajax({
+			type: "POST",
+			url: "PHP/api/alteraUsuario.php",
+			data: JSON.stringify({old_name:old_name,new_name:new_name}),
+			contentType: "application/json",
+			dataType: "json",
+			complete: function(xhr) {
+				
+				if(xhr.status =="403"){
+					$("#error_change_user").text(xhr.responseText);		
+					console.log(xhr.responseText);
+				}
+				if(xhr.status =="201"){
+					$("#popup_user").fadeOut("fast", function() {
+						$(this).empty();
+					});
+					$("#change_information").text("Usuario alterado com Sucesso");
+					$("#manager_name").val(new_name);
+				}
+			}
+		});
+		
+		return false;
 	});
 	
-	//PopUp de Registro de Usuario//
-	$(document).on('click', "#register", function() {
-		if($(".add_user").length === 0)
-		{
-			$("#popup").hide().append("<div class='add_user'><div><div class='col-xs-12  col-sm-12  col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4 popup'><form id='form_add_host'  action='#' autocomplete='off'><div class='form-group'><label class='control-label' for='nome'>Nome</label><div class='input-group'><span class='input-group-addon'><i class='fas fa-folder-plus'></i></span><input type='text' class='form-control' name='new_name' id='new_name'  placeholder='Nome' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta SSH</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-docker'></i></span><input type='text' class='form-control' name='new_ssh_port' id='new_ssh_port'  placeholder='Porta SSH' required></div></div><div class='form-group'><label class='control-label' for='nome'>Porta Web</label><div class='input-group'><span class='input-group-addon'><i class='fab fa-internet-explorer'></i></span><input type='text' class='form-control' name='new_web_port' id='new_web_port'  placeholder='Porta Web' required></div></div><div class='row'><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6'><button id='add_host' type='submit' name='new_host' value='host' class='btn btn-info'>Adicionar</button></div><div class='col-xs-6  col-sm-6 col-md-6 col-lg-6 text-center'><button id='cancel_new_host' type='button'  name='cancel' value='cancel' class='btn btn-danger'>Cancelar</button></div></div></form><h3 id='error_new_host'></h3></div></div></div>").fadeIn("fast");
+	//Altera Email//
+	$(document).on('submit', "#form_change_email", function() {
+	
+		$("#error_change_email").empty();
+		$("#change_information").empty();
+		var old_email = $("#manager_email").val();
+		var new_email = $("#new_email").val();	
+		$.ajax({
+			type: "POST",
+			url: "PHP/api/alteraEmail.php",
+			data: JSON.stringify({old_email:old_email,new_email:new_email}),
+			contentType: "application/json",
+			dataType: "json",
+			complete: function(xhr) {
+				
+				if(xhr.status =="403"){
+					$("#error_change_email").text(xhr.responseText);		
+					console.log(xhr.responseText);
+				}
+				if(xhr.status =="201"){
+					$("#popup_user").fadeOut("fast", function() {
+						$(this).empty();
+					});
+					$("#change_information").text("Email alterado com Sucesso");
+					$("#manager_email").val(new_email);
+				}
+			}
+		});
+		
+		return false;
+	});
+	
+	//Altera Senha//
+	$(document).on('submit', "#form_change_password", function() {
+	
+		$("#error_change_password").empty();
+		$("#change_information").empty();
+		
+		var old_password = $("#old_password").val();
+		var new_password = $("#new_password").val();	
+		var new_password_2 = $("#new_password_2").val();
+		
+		if(new_password !=new_password_2){
+			$("#error_change_password").text("Os campos novos de senha não são iguais");
+		
 		}
+		else{
+			$.ajax({
+				type: "POST",
+				url: "PHP/api/alteraSenha.php",
+				data: JSON.stringify({old_password:old_password,new_password:new_password}),
+				contentType: "application/json",
+				dataType: "json",
+				complete: function(xhr) {
+					
+					if(xhr.status =="403"){
+						$("#error_change_password").text(xhr.responseText);		
+						console.log(xhr.responseText);
+					}
+					if(xhr.status =="201"){
+						$("#popup_user").fadeOut("fast", function() {
+							$(this).empty();
+						});
+						$("#change_information").text("Senha alterada com Sucesso");
+						$("#manager_email").val(new_email);
+					}
+				}
+			});
+		}
+		return false;
 	});
 	
-	//Formulario que adiciona um novo Host//
+	
+	//Adiciona um novo Host//
 	$(document).on('submit', "#form_add_host", function() {
 		var add_name=$( "#new_name").val();
 		var add_ssh =$( "#new_ssh_port").val();
@@ -244,8 +423,8 @@
 					$( "#error_new_host").hide().text(xhr.responseText).fadeIn("fast");
 				}
 				if(xhr.status =="201"){
-					$(".add_user").fadeOut("fast", function() {
-					$(this).remove();
+					$("#popup_host").fadeOut("fast", function() {
+					$(this).empty();
 					});
 					
 					//Pega todos os hosts do usuario//
@@ -270,18 +449,29 @@
 		return false;
 	});
 	
-	//Remove PopUp de novo host//
-	$(document).on('click', "#cancel_new_host", function() {
-		$(".add_user").fadeOut("fast", function() {
-			$(this).remove();
+	//Restrição de Input//
+	$(document).on('keypress',"#new_ssh_port,#new_web_port", function (event) {
+    var regex = new RegExp("^[0-9\b]+$");
+    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    if (!regex.test(key)) {
+       event.preventDefault();
+       return false;
+    }
+	});
+	
+	
+	
+	//Remove PopUp Host//
+	$(document).on('click', "#cancel_new_host,#cancel_delete_host,#cancel_change_password,#cancel_change_email,#cancel_change_user", function() {
+		$("#popup_host").fadeOut("fast", function() {
+			$(this).empty();
 		});
 	});
 	
-	//Remove PopUp de deletar host//
-	$(document).on('click', "#cancel_delete_host", function() {
-	
-		$("#cancel_host").fadeOut("fast", function() {
-			$(this).remove();
+	//Remove PopUp User//
+	$(document).on('click', "#cancel_change_password,#cancel_change_email,#cancel_change_user", function() {
+		$("#popup_user").fadeOut("fast", function() {
+			$(this).empty();
 		});
 	});
 	
@@ -326,13 +516,4 @@
 		});
 		return false;
 	}
-	
-	
-	//Delete Host//
-	function deleteHost(name,ssh,web)
-	{
-	
-	
-	}
-	
 	</script>
