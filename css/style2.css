@@ -212,6 +212,7 @@ border-top: 3px solid #1aabe5;
 	background-color: #21a1a1;
 	display:table;
 	padding-bottom:10px;
+	z-index: 999;
 }
 
 #form_add_host{

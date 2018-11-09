@@ -12,6 +12,7 @@ include "include/json/json_rec.php";
 
 // Valida no banco as informações recebidas
 include "include/db/connect.php";
+
 session_start();
 if (!(isset($_SESSION['id_user']) )){
 	http_response_code(403);
@@ -23,7 +24,7 @@ else{
 	
 	try {
 		//Checa o usuario no banco//
-		$stmt = $dbh->prepare("SELECT nome FROM usuarios WHERE idusuario= :ID;");
+		$stmt = $dbh->prepare("SELECT nome,email FROM usuarios WHERE idusuario= :ID;");
 
 		//Vinculando parametros//
 		$stmt->bindParam(":ID", $id);

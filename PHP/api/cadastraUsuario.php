@@ -3,14 +3,14 @@
  * API DE CADASTRAMENTO DE USUARIO
  * Parametros esperados de entrada:
  *      * Nome completo
- *      * email
- *      * senha
+ *      * Email
+ *      * Senha
  *  exemplo json esperado
  *
  *
  {
-	"nome":"nome_Completo_usuario5",
-	"email" : "email5",
+	"nome":"Raphael Fernandez",
+	"email" : "rapha_fernandez@hotmail.com",
 	"senha" : "12345678",
 
 }
@@ -35,7 +35,7 @@
 	$email = $obj['email'];
     $name = $obj['username'];
     $password = $obj['password'];
-	´
+	
     // Verifica se veio algum campo em branco//
     if(!(isset($obj['username']) AND isset($obj['email']) AND isset($obj['password']))) {
         //Faltou algum campo então nao é aprovada a movimentacao//

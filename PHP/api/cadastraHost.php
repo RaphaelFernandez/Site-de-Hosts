@@ -38,7 +38,7 @@
 			
 			// Faltou algum campo então nao é aprovada a movimentacao
 			http_response_code(403);
-			exit("Falta de parametros");
+			exit("Houve algum erro campos em branco");
 		}
 		// Todos os campos vieram preenchidos
 		else{
@@ -111,14 +111,15 @@
 					$stmt->bindParam(":ID_DONO",$id);
 					// Realmente realiza a execucao da query
 					$stmt -> execute();
+							
+					// Retorna o codigo 201 (Criado)
+					http_response_code(201);
+					exit("Host cadastrado");
 				}catch (Exception $e) {
 					echo 'Exceção capturada: ', $e->getMessage(), "\n";
 					http_response_code(403);
 					exit("Erro DB 3");
-				}			
-				// Retorna o codigo 201 (Criado)
-				http_response_code(201);
-				exit("Host cadastrado");
+				}
 			
 			}
 		}
